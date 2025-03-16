@@ -4,12 +4,12 @@
 	<stdlib.h>
 	<stdbool.h>
 
-1742082962 source:c:\users\leila\onedrive\documents\esi\alsdd\c_progs\tp\main.c
+1742154462 source:c:\users\leila\onedrive\documents\esi\alsdd\c_progs\tp\main.c
+	<conio.h>
+	<malloc.h>
+	<stdbool.h>
 	<stdio.h>
 	<stdlib.h>
-	<stdbool.h>
-	<malloc.h>
-	<conio.h>
 	<string.h>
 	"library.h"
 
