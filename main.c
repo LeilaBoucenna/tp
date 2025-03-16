@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+//test
 #include "library.h"
 /*typedef struct book{
 int id;
@@ -14,7 +14,7 @@ char author[100];
 struct book *next;
 struct book *prev;
 }book;
-// FROM KARIM
+// FROM KARIM <3
 typedef struct borrower{
 int id;
 char name[256];
@@ -422,7 +422,7 @@ int main() {
                 break;
                 }*/
     case 0: {
-      exit(1);
+      exit(0);///Happy ending
     }
 
     default: {
