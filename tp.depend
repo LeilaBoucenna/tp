@@ -1,0 +1,32 @@
+# depslib dependency file v1.0
+1741440736 source:c:\users\leila\onedrive\documents\esi\alsdd\c_progs\tp\function_library.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+
+1742082962 source:c:\users\leila\onedrive\documents\esi\alsdd\c_progs\tp\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<malloc.h>
+	<conio.h>
+	<string.h>
+	"library.h"
+
+1742081917 c:\users\leila\onedrive\documents\esi\alsdd\c_progs\tp\library.h
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<malloc.h>
+	<conio.h>
+	<string.h>
+
+1742081882 source:c:\users\leila\onedrive\documents\esi\alsdd\c_progs\tp\library.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<malloc.h>
+	<conio.h>
+	<string.h>
+	"library.h"
+
