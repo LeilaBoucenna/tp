@@ -461,7 +461,7 @@ getch();
 
 int main() {
 list lst ={NULL,NULL};
-///    List list={NULL,NULL}///both the head and the tail of the borrower list are initialized to NULL
+///both the head and the tail of the borrower list are initialized to NULL
   int menu;
   auto_add_book();
 lst=auto_add_borr(lst);
@@ -492,7 +492,7 @@ lst=auto_add_borr(lst);
     }
     case 2: {
       add_book(); /// we will add a book head and tail will get updated
-      break;
+      break;   /// will be changed the same way add borrower
     }
     case 3: {
       int nbr;
