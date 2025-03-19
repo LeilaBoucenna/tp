@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//test
 #include "library.h"
+
 /*typedef struct book{
 int id;
 int copy;
@@ -14,7 +14,8 @@ char author[100];
 struct book *next;
 struct book *prev;
 }book;
-// FROM KARIM <3
+
+
 typedef struct borrower{
 int id;
 char name[256];
@@ -24,14 +25,17 @@ struct borrower *prev;
 
 */
 
-// From Karim
 
-/*typedef struct List
-{book* head=NULL;
- book* tail=NULL;
-}List;**/
+
+typedef struct list{
+  borrower *head_b;
+  borrower *tail_b;
+        }list;
+
 
 /// var globale///!!! a re checker
+
+/////////////////////////
 borrower *BORROW = NULL;
 book *HEAD = NULL;
 book *TAIL = NULL;
@@ -55,7 +59,6 @@ book *book_search(int n) /// search for the book by his id if founded returns it
   }
   return NULL;
 }
-/////////////////////////
 
 void delete_first() /// WORKING GOOD
 {
@@ -98,7 +101,7 @@ void delete_book(int n) /// WORKING GOOD
 {
   bool found = false;
   book *temp = HEAD;
-  book *p = NULL;
+  ///book *p = NULL;
   if (temp == NULL) {
     // List is empty
     printf("The list is empty.\n");
@@ -142,7 +145,7 @@ void delete_book(int n) /// WORKING GOOD
 void affiche_book() {
   book *temp = HEAD;
   if (temp == NULL) {
-    printf("YHE BOOK LIST IS EMPTY");
+    printf("THE BOOK LIST IS EMPTY");
 
   } else {
     printf("<== Available Books ==>\n\n");
@@ -321,7 +324,7 @@ int length_list(book *head) {
 }
 
 book *trie_bubble_croissant(book *head) {
-  book *temp = head;
+  
   if (head == NULL) {
     printf("the list is empty");
   } else {
@@ -363,9 +366,9 @@ void book_list() {
     HEAD = trie_bubble_croissant(HEAD);
     break;
   }
-    /*case 2:
+  /* case 2:
        {
-       sort_title();
+      sort by title
        break;
        }*/
   }
@@ -375,12 +378,93 @@ void book_list() {
   getch();
 }
 
-void add_borrower(int id, const char *name) {}
+borrower* search_borr(borrower* head,int ID){
+
+    borrower* current= head;
+    while(current !=NULL){
+        if (current->id == ID){
+            return current;
+            }
+        current= current->next;
+
+    }
+    return NULL;
+
+    }
+
+list add_borr(list k,int IDs, const char* name){
+        if (search_borr(k.head_b,IDs)!=NULL){
+            printf("l'etudiant existe deja !\n");
+            printf("Press enter to comeback to the menu");
+            getch();
+        return k;
+        }
+
+
+        borrower* newOne= (borrower*)malloc(sizeof(borrower));///create a new cell
+        if (newOne == NULL) {
+            printf("Memory allocation failed.\n");
+             printf("Press enter to comeback to the menu");
+            getch();
+            return k; // Return the unchanged list
+        }
+
+        newOne->id=IDs;
+        strcpy(newOne->name,name);
+        newOne->next=NULL;///initialize prev and next to NULL
+        newOne->prev=NULL;
+
+        if(k.head_b==NULL ){
+           k.head_b=newOne;
+            k.tail_b=newOne;
+        }
+        else{
+            newOne->prev=k.tail_b;
+
+            (k.tail_b)->next=newOne;
+            (k.tail_b)=newOne;
+            k.tail_b->next=NULL;
+        }
+       return k;
+        }
+
+list auto_add_borr(list k)
+{k=add_borr(k,47,"leila");
+k=add_borr(k,45,"Amina");
+k=add_borr(k,741,"ROSE");
+k=add_borr(k,125,"Jennie");
+k=add_borr(k,412,"HIBA");
+ return k;
+}
+
+void display_borrower(list k)
+{
+    borrower* current = k.head_b;
+     if (current == NULL) {
+    printf("THE BOOK LIST IS EMPTY");
+   return;
+  }
+  else
+    {
+    printf("<== Borrower List ==>\n\n");
+    printf("%-10s %-40s\n", "Book id", "Book Name");
+
+        while (current != NULL) {
+        printf("%-10d  %-40s \n", current->id, current->name);
+        current = current->next;
+}
+}
+printf("\nPress ENTER to comeback to the menu.");
+getch();
+}
+
 
 int main() {
+list lst ={NULL,NULL};
+///    List list={NULL,NULL}///both the head and the tail of the borrower list are initialized to NULL
   int menu;
   auto_add_book();
-
+lst=auto_add_borr(lst);
   do {
     system("cls");
     printf("Library management system\n\n");
@@ -391,11 +475,12 @@ int main() {
                                               /// other stuff
     printf("3-Remove a book or Take a book.\n"); /// but in add i need nothing
     printf("4-Display borrower list.\n");
+    printf("5-Add a borrower.\n");
     /// search book dont forget it
-    printf("5-Loan list.\n");
-    printf("6-Display statistics of the total number of books and borrowers, "
-           "active loans, and overdue books.\n\n");
-
+    printf("7-Loan list.\n");
+    printf("7-Display statistics of the total number of books and borrowers, "
+           "active loans, and overdue books.\n");
+   printf("0-EXIT and delete all.\n\n");
     printf("Enter your choice:  ");
 
     scanf("%d", &menu);
@@ -416,11 +501,22 @@ int main() {
       delete_book(nbr);
       break;
     }
+    case 4:{
+            display_borrower(lst);
+            break;
+           }
+   case 5:
+        {
+       printf("Enter the full name of the new borrower : ");
+       char nom[100];
+       scanf("%s",&nom);
+      printf("\nEnter ID : ");
+      int n;
+      scanf("%d",&n);
+      lst=add_borr(lst,n,nom);
+        break;
+        }
 
-      /*case 4:{
-                search_book();
-                break;
-                }*/
     case 0: {
       exit(0);///Happy ending
     }

@@ -89,3 +89,4 @@ int ID_BOOK(book *p)
 {int k=p->id;
    return k;
 }
+
