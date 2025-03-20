@@ -324,7 +324,7 @@ int length_list(book *head) {
 }
 
 book *trie_bubble_croissant(book *head) {
-  
+
   if (head == NULL) {
     printf("the list is empty");
   } else {
@@ -392,7 +392,7 @@ borrower* search_borr(borrower* head,int ID){
 
     }
 
-list add_borr(list k,int IDs, const char* name){
+list add_borr(list k,int IDs, char name[100]){  ///to change add name then family name
         if (search_borr(k.head_b,IDs)!=NULL){
             printf("l'etudiant existe deja !\n");
             printf("Press enter to comeback to the menu");
@@ -408,7 +408,8 @@ list add_borr(list k,int IDs, const char* name){
             getch();
             return k; // Return the unchanged list
         }
-
+       else
+       {
         newOne->id=IDs;
         strcpy(newOne->name,name);
         newOne->next=NULL;///initialize prev and next to NULL
@@ -425,6 +426,7 @@ list add_borr(list k,int IDs, const char* name){
             (k.tail_b)=newOne;
             k.tail_b->next=NULL;
         }
+       }
        return k;
         }
 
@@ -458,6 +460,74 @@ printf("\nPress ENTER to comeback to the menu.");
 getch();
 }
 
+list delete_borr_id(list k, int ID){
+    bool found=false;
+if (k.head_b==NULL){
+  printf("The list is empty.\n");
+    return k;
+}
+
+borrower* temp= k.head_b;
+while (temp != NULL && found == false) {
+if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
+                       // il est au milleiu sinon cas fin et cas debut
+    {
+      found = true;
+      if (temp == k.head_b) /// le livre a supprimer se trouve au debut de la liste
+      {
+        /// WORKING GOOD
+
+      borrower *temp = k.head_b;
+      k.head_b = k.head_b->next;
+      temp->next= NULL;
+      k.head_b->prev=NULL;
+      free(temp);
+
+      } else {
+        if (temp == k.tail_b) ///FAUT LA REFAIRE  si le livre se trouve a la fin
+        {/////////
+
+
+  if (k.head_b == k.tail_b) // If there's only one node
+  {free(k.head_b);
+   k.head_b= NULL;
+   k.tail_b= NULL; /// now the list is empty
+  }
+  else         /// the list is not empty and contains more than one book
+  {
+    borrower *temp = k.tail_b->prev;
+    if (temp != NULL) {
+      free(k.tail_b);
+      k.tail_b = temp;
+      k.tail_b->next = NULL;
+    } else {
+      // Handle potential error if temp is unexpectedly NULL
+      fprintf(stderr, "Error: Unable to delete the last node.\n");
+    }
+    }
+        } else /// si le livre se trouve au millieu de la liste
+        {
+          borrower *before = temp->prev;
+          borrower *after = temp->next;
+          before->next = after;
+          after->prev = before;
+          free(temp);
+        }
+      }
+      printf("Borrower with ID %d deleted.\n", ID);
+      printf("\n Press enter to come back to the menu");
+      getch();
+      return k;
+    }
+    temp = temp->next;
+  } /// si le borrower n'existe pas je ne fais rien
+  printf("Borrower with ID %d not found.\n", ID);
+  printf("\n Press enter to come back to the menu");
+  getch();
+}
+///////////////////
+
+
 
 int main() {
 list lst ={NULL,NULL};
@@ -477,6 +547,7 @@ lst=auto_add_borr(lst);
     printf("4-Display borrower list.\n");
     printf("5-Add a borrower.\n");
     /// search book dont forget it
+    printf("6-Delete a borrower.\n");
     printf("7-Loan list.\n");
     printf("7-Display statistics of the total number of books and borrowers, "
            "active loans, and overdue books.\n");
@@ -516,6 +587,13 @@ lst=auto_add_borr(lst);
       lst=add_borr(lst,n,nom);
         break;
         }
+   case 6 :
+    {printf("Enter the ID of the borrower that you want to delete from the list  :  ");
+     int n;
+     scanf("%d",&n);
+     lst=delete_borr_id(lst,n);
+     break;
+    }
 
     case 0: {
       exit(0);///Happy ending
