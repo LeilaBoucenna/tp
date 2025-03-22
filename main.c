@@ -392,7 +392,7 @@ borrower* search_borr(borrower* head,int ID){
 
     }
 
-list add_borr(list k,int IDs, char name[100]){  ///to change add name then family name
+list add_borr(list k,int IDs, char name[50]){  ///to change add name then family name
         if (search_borr(k.head_b,IDs)!=NULL){
             printf("l'etudiant existe deja !\n");
             printf("Press enter to comeback to the menu");
