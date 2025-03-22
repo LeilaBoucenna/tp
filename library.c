@@ -27,6 +27,8 @@ return;
 }
 
 
+
+
 //assign ID
 void Ass_id_book(book *book,int id ){
 if (book == NULL){
@@ -48,6 +50,15 @@ if (book == NULL){
 strcpy(book->title , title);
 
 }
+//ASS NBR OF COPY
+void ass_copy_book(book *p,int n)
+{if (p == NULL){
+    printf("Erreur  c''est vide \n");
+    return ;
+}
+   p->copy=n;
+    return ;
+}
 
 //NEXT BOOK
 book* next_book(book* book){
@@ -58,9 +69,18 @@ return book->next;
 book* prev_book(book* book){
 return book->prev ;
 }
+ //ID BOOK
+int  book_id(book *p)
 
+{
+    return p->id;
+}
 
+int  book_copy(book *p)
 
+{
+    return p->copy;
+}
 
 
 

@@ -33,22 +33,28 @@ typedef struct list{
         }list;
 
 
+typedef struct list_book
+{
+    book* HEAD;
+    book* TAIL;
+}list_book;
+
 /// var globale///!!! a re checker
 
 /////////////////////////
-borrower *BORROW = NULL;
+/*borrower *BORROW = NULL;
 book *HEAD = NULL;
-book *TAIL = NULL;
+book *TAIL = NULL;*/
 
 /// this one working and used model abstract
-book *book_search(int n) /// search for the book by his id if founded returns it
+book *book_search(list_book k,int n) /// search for the book by his id if founded returns it
                          /// @ else return 0(doesnt exist)
 {
-  if (HEAD == NULL)
+  if (k.HEAD == NULL)
     return NULL; // si la liste est vide donc il n existe pas
                  /// si oui liste n est pas vide
 
-  book *temp = HEAD;
+  book *temp = k.HEAD;
   while (temp != NULL) {
     if (ID_BOOK(temp) == n) {
       return temp;
@@ -60,90 +66,94 @@ book *book_search(int n) /// search for the book by his id if founded returns it
   return NULL;
 }
 
-void delete_first() /// WORKING GOOD
+list_book delete_first(list_book k) /// WORKING GOOD
 {
-  book *temp = HEAD;
-  HEAD = next_book(HEAD);
+  book *temp = k.HEAD;
+  k.HEAD = next_book(k.HEAD);
   Ass_add_R(temp, NULL);
-  Ass_add_L(HEAD, NULL);
+  Ass_add_L(k.HEAD, NULL);
   free(temp);
 }
 
 //////////////////
-void delete_last_node() /// WORKING GOOD
+list_book delete_last_node(list_book k) /// WORKING GOOD
 {                       // TAIL->prev
-  if (HEAD == NULL || TAIL == NULL) {
+  if (k.HEAD == NULL || k.TAIL == NULL) {
     printf("\n The list is empty\n");
-    return;
+    return k;
   }
 
-  if (HEAD == TAIL) // If there's only one node
+  if (k.HEAD == k.TAIL) // If there's only one node
   {
-    free(HEAD);
-    HEAD = NULL;
-    TAIL = NULL; /// now the list is empty
+    free(k.HEAD);
+    k.HEAD=NULL;
+    k.TAIL=NULL; /// now the list is empty
   } else         /// the list is not empty and contains more than one book
   {
-    book *temp = prev_book(TAIL);
+    book *temp = prev_book(k.TAIL);
     if (temp != NULL) {
-      free(TAIL);
-      TAIL = temp;
-      TAIL->next = NULL;
+      free(k.TAIL);
+      k.TAIL=temp;
+      Ass_add_R(k.TAIL,NULL);
     } else {
       // Handle potential error if temp is unexpectedly NULL
       fprintf(stderr, "Error: Unable to delete the last node.\n");
     }
   }
+  return k;
 }
 ///!!!!!!!!!!!!do i delete it completely or deincrment the nmb of copy availble
 ///until =0 at this moment i delete completly
-void delete_book(int n) /// WORKING GOOD
+list_book delete_book(list_book k,int n) /// WORKING GOOD
 {
   bool found = false;
-  book *temp = HEAD;
-  ///book *p = NULL;
+  book *temp = k.HEAD;
+
   if (temp == NULL) {
     // List is empty
     printf("The list is empty.\n");
-    return;
+    return k;
   }
   /// est ce que je fais le cas quand la liste est vide
   while (temp != NULL && found == false) {
-    if (temp->id == n) // je le supprime et je fais un lien entr prev et next si
+    if (book_id(temp) == n) // je le supprime et je fais un lien entr prev et next si
                        // il est au milleiu sinon cas fin et cas debut
     {
       found = true;
-      if (temp == HEAD) /// le livre a supprimer se trouve au debut de la liste
+      if (temp == k.HEAD) /// le livre a supprimer se trouve au debut de la liste
       {
-        delete_first();
+       k=delete_first(k);
       } else {
-        if (temp == TAIL) /// si le livre se trouve a la fin
+        if (temp == k.TAIL) /// si le livre se trouve a la fin
         {
-          delete_last_node();
+         k=delete_last_node(k);
         } else /// si le livre se trouve au millieu de la liste
         {
           book *before = temp->prev;
           book *after = temp->next;
-          before->next = after;
-          after->prev = before;
+
+         Ass_add_R(before,after);
+         Ass_add_L(after,before);
+
           free(temp);
         }
       }
       printf("Book with ID %d deleted.\n", n);
       printf("\n Press enter to come back to the menu");
       getch();
-      return;
+      return k;
     }
-    temp = temp->next;
+   temp=next_book(temp);
   } /// si le livre n'existe pas je ne fais rien
   printf("Book with ID %d not found.\n", n);
   printf("\n Press enter to come back to the menu");
   getch();
+  return k;
 }
 /////////////////////////////
 
-void affiche_book() {
-  book *temp = HEAD;
+void affiche_book(list_book k) {
+  book *temp = k.HEAD;///il me dit que k.head est NULL
   if (temp == NULL) {
     printf("THE BOOK LIST IS EMPTY");
 
@@ -152,62 +162,60 @@ void affiche_book() {
     printf("%-10s %-30s %-40s %-50s\n", "Book id", "Book Name", "Book author",
            "Number of copies available");
 
-    while (temp != NULL) {
-      printf("%-10d %-30s %-40s %-50d \n", temp->id, temp->title, temp->author,
-             temp->copy);
-      temp = temp->next;
+    while (temp != NULL)
+    {
+      printf("%-10d %-30s %-40s %-50d \n",book_id(temp),temp->title,temp->author,book_copy(temp));
+      temp=next_book(temp);
     }
   }
 }
 
-/////////////////////////////
-void addBookman(int id, const char *name, const char *author) {
+list_book addBookman(list_book k,int id, const char *name, const char *author) {
   book *temp = (book *)malloc(sizeof(book));
 
   if (temp == NULL) {
     // Handle memory allocation failure
     fprintf(stderr, "Memory allocation failed\n");
-    return;
+    return k;
   }
-  temp->id = id;
-  temp->copy = 1;
-  strncpy(temp->title, name,
-          sizeof(temp->title) - 1); // Ensure buffer is not overflowed
+  Ass_id_book(temp,id);
+  ass_copy_book(temp,1);
+  strncpy(temp->title, name,sizeof(temp->title) - 1); // Ensure buffer is not overflowed
   temp->title[sizeof(temp->title) - 1] = '\0'; // Null-terminate
   strncpy(temp->author, author, sizeof(temp->author) - 1);
   temp->author[sizeof(temp->author) - 1] = '\0'; // Null-terminate
 
-  if (HEAD == NULL && TAIL == NULL) /// LIST EMPTY
+  if (k.HEAD == NULL && k.TAIL == NULL) /// LIST EMPTY
   {
-    HEAD = temp;
-    TAIL = temp;
-    TAIL->prev = NULL;
-    HEAD->prev = NULL;
-    HEAD->next = NULL;
+    k.HEAD=temp;
+    k.TAIL=temp;
+    Ass_add_L(k.TAIL,NULL);
+    Ass_add_L(k.HEAD,NULL);
+    Ass_add_R(k.HEAD,NULL);
 
   } else {
-    temp->prev = TAIL;
-    TAIL->next = temp;
-    TAIL = temp;
-    TAIL->next = NULL;
-  }
+    Ass_add_L(temp,k.TAIL);
+    Ass_add_R(k.TAIL,temp);
+    k.TAIL=temp;
+    Ass_add_R(k.TAIL,NULL);  }
+    return k;
 }
 
-void auto_add_book() /// this function fill the book list automaticly
-{
-  addBookman(1, "Internet of Things", "Eric Freeman");
-  addBookman(2, "Parallel Programming", "Peter Pacheco");
-  addBookman(3, "Web Development Fundamentals", "Jiawei Han");
-  addBookman(4, "Data Mining", "David A. Patterson");
-  addBookman(5, "Computer Graphics", "Nielsen Chuang");
-  addBookman(6, "Quantum Computing", "Andrew S. Tanenbaum");
-  addBookman(7, "Game Development", "Jake VanderPlas");
-  addBookman(8, "Computer Architecture", "Jacob Eisenstein");
-  addBookman(9, "Functional Programming", "Nielsen Chuang");
-  addBookman(10, "Cybersecurity Principles", "Jacob Eisenstein");
-  addBookman(11, "Game Development", "Jacob Eisenstein");
-  addBookman(12, "Parallel Programming", "Kazem Sohraby");
-  addBookman(13, "Wireless Sensor Networks", "Thomas Cormen");
+list_book auto_add_book(list_book k) /// this function fill the book list automaticly
+{ k=addBookman(k,9, "Functional Programming", "Nielsen Chuang");
+ k=addBookman(k,10, "Cybersecurity Principles", "Jacob Eisenstein");
+ k=addBookman(k,11, "Game Development", "Jacob Eisenstein");
+ k=addBookman(k,12, "Parallel Programming", "Kazem Sohraby");
+ k=addBookman(k,1, "Internet of Things", "Eric Freeman");
+ k=addBookman(k,2, "Parallel Programming", "Peter Pacheco");
+ k=addBookman(k,3, "Web Development Fundamentals", "Jiawei Han");
+ k=addBookman(k,4, "Data Mining", "David A. Patterson");
+ k=addBookman(k,5, "Computer Graphics", "Nielsen Chuang");
+ k=addBookman(k,6, "Quantum Computing", "Andrew S. Tanenbaum");
+ k=addBookman(k,7, "Game Development", "Jake VanderPlas");
+ k=addBookman(k,8, "Computer Architecture", "Jacob Eisenstein");
+
+ /* addBookman(13, "Wireless Sensor Networks", "Thomas Cormen");
   addBookman(14, "Deep Learning", "Peter Pacheco");
   addBookman(15, "Database Management Systems", "Richard Szeliski");
   addBookman(16, "Programming with Java", "Ben Fry");
@@ -244,77 +252,101 @@ void auto_add_book() /// this function fill the book list automaticly
   addBookman(47, "Wireless Sensor Networks", "Rajkumar Buyya");
   addBookman(48, "Embedded Systems", "Nielsen Chuang");
   addBookman(49, "Cloud Computing", "Rajkumar Buyya");
-  addBookman(50, "Blockchain Technology", "William Stallings");
+  addBookman(50, "Blockchain Technology", "William Stallings");*/
 
-  book *temp = HEAD;
+  book *temp = k.HEAD;
   while (temp != NULL) {
-    temp->copy = 1;
-    temp = temp->next;
+   ass_copy_book(temp,1);
+   temp=next_book(temp);
   }
+ return k;
 }
 
 //////////////////////////
-void add_book() {
+list_book add_book(list_book k) { ///on rajoute des livre a la liste et en meme temp en l organise par ordre d id croissant
   /// first case if the book list is empty we add the first book
 
-  book *temp = HEAD;
-  book *p = NULL;
+  book *temp = k.HEAD;
+  book *current = NULL;
 
   // let us create individual node
   temp = (book *)malloc(sizeof(book));
 
   if (temp == NULL) {
     printf("Memory allocation failed\n");
-    return;
+    return k;
   }
 
   printf("\nEnter book id: ");
   scanf("%d", &temp->id);
-  int id = ID_BOOK(temp);
+  int id =ID_BOOK(temp);
 
   printf("\nEnter book title: ");
   scanf("%s", &temp->title);
 
   printf("\nEnter book author: ");
   scanf("%s", &temp->author);
-
-  temp->prev = NULL;
-  temp->next = NULL;
+  temp->prev=NULL;
+  temp->next=NULL;
   temp->copy = 1;
   /// c bon we created a cell
-  if (HEAD == NULL ||
-      TAIL ==
-          NULL) /// first case if the book list is empty we add the first book
+  if (k.HEAD == NULL /*|| k.TAIL ==NULL*/) /// first case if the book list is empty we add the first book
   {
-    HEAD = temp; /// head ET TAIL  pointeront a la nouvelle cellule creer
-    TAIL = temp;
+    k.HEAD=temp; /// head ET TAIL  pointeront a la nouvelle cellule creer
+    k.TAIL=temp;
 
-  } else /// seconde case if the list is not empty
+  }
+   else /// seconde case if the list is not empty
   {
-    p = book_search(id);
-    if (p != NULL) /// ie ce livre existe deja
-    {              /// faux
-      p->copy = p->copy + 1;
-      temp = p;
+book *current = book_search(k,id);
+    if (current != NULL) /// ie ce livre existe deja
+    {
+      current->copy = current->copy + 1;
+      free(temp);
+    }
+     else ///je traverse la liste pour rajouter le livre au bon endroit
+    {book *current=k.HEAD;
+    while ((ID_BOOK(current)<id) && current->next!=NULL )
+    {
+      current=next_book(current) ;///je traverse la liste
+    }
 
-    } else /// il nexister pas avant je cree une nouvelle cellule avec nbr copy
-           /// =1
-    { /// mais sa doit etre une sorted linked list por le moment elle ne sera
-      /// pas organiser
+    if (current==k.TAIL)///l ID rajouter est le plus grand donc il sera forcement ajouter a la fin
+    {
+    k.TAIL->next=temp;///this part not working proprely
+    temp->prev=k.TAIL;
+    k.TAIL=temp;
+    }
+    else
+    {
+        if(current==k.HEAD) ///si l ID est le plus petit il sera ajouter au debut
+    {
+     temp->next=k.HEAD;     ///cette partie marche
+     k.HEAD->prev=temp;
+     k.HEAD=temp;
 
-      TAIL->next = temp;
-      TAIL = temp;
-      TAIL->prev = temp->prev;
+    }
+    else/// si l id sera rajoutr au millieu
+    {
+    book *previous=current->prev;
+
+     previous->next=temp;
+     temp->next=current;
+     temp->prev=previous;
+     current->prev=temp;
+    }
+    }
+
     }
   }
-  printf("\n THIS BOOK WAS ADDED SUCCESSFULLY");
+  printf("\n THIS BOOK WAS ADDED SUCCESSFULLY\n");
   printf("\n Press enter to come back to the menu");
   getch();
-  return;
+  return k;
 }
 
 int length_list(book *head) {
-  int cpt = 0;
+      int cpt = 0;
   book *temp = head;
   while (temp != NULL) {
     cpt = cpt + 1;
@@ -323,34 +355,7 @@ int length_list(book *head) {
   return cpt;
 }
 
-book *trie_bubble_croissant(book *head) {
-
-  if (head == NULL) {
-    printf("the list is empty");
-  } else {
-    int i = length_list(head) - 1;
-
-    for (int k = 0; k <= i; k++)
-
-    {
-      book *prev = head;
-      book *temp = head->next;
-      while (temp != NULL) {
-        if ((prev->id) > (temp->id)) {
-          int sauv;
-          sauv = prev->id;
-          prev->id = temp->id;
-          temp->id = sauv;
-        }
-        prev = prev->next;
-        temp = temp->next;
-      }
-    }
-  }
-  return head;
-}
-
-void book_list() {
+void display_book(list_book h) {///cette fonction devient useless
   printf("if you want the list of book to be sorted by :\n");
   printf("*ID    (Press 1)\n");
   printf("*Title     (Press 2)\n");
@@ -362,9 +367,8 @@ void book_list() {
     scanf("%d", &order);
   }
   switch (order) {
-  case 1: {
-    HEAD = trie_bubble_croissant(HEAD);
-    break;
+  case 1: {affiche_book(h);
+  break;
   }
   /* case 2:
        {
@@ -373,7 +377,7 @@ void book_list() {
        }*/
   }
 
-  affiche_book();
+
   printf("\n Press enter to come back to the menu");
   getch();
 }
@@ -532,9 +536,10 @@ if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
 
 int main() {
 list lst ={NULL,NULL};
+list_book BOOK={NULL,NULL};
 ///both the head and the tail of the borrower list are initialized to NULL
   int menu;
-  auto_add_book();
+//BOOK=auto_add_book(BOOK);
 lst=auto_add_borr(lst);
   do {
     system("cls");
@@ -545,12 +550,13 @@ lst=auto_add_borr(lst);
                                               /// for the student id and maybe
                                               /// other stuff
     printf("3-Remove a book or Take a book.\n"); /// but in add i need nothing
+
     printf("4-Display borrower list.\n");
     printf("5-Add a borrower.\n");
     /// search book dont forget it
     printf("6-Delete a borrower.\n");
-    printf("7-Loan list.\n");
-    printf("7-Display statistics of the total number of books and borrowers, "
+    printf("9-Loan list.\n");
+    printf("8-Display statistics of the total number of books and borrowers, "
            "active loans, and overdue books.\n");
    printf("0-EXIT and delete all.\n\n");
     printf("Enter your choice:  ");
@@ -559,18 +565,18 @@ lst=auto_add_borr(lst);
 
     switch (menu) {
     case 1: {
-      book_list();
+     display_book(BOOK);
       break;
     }
     case 2: {
-      add_book(); /// we will add a book head and tail will get updated
+     BOOK=add_book(BOOK); /// we will add a book head and tail will get updated
       break;   /// will be changed the same way add borrower
     }
     case 3: {
       int nbr;
       printf("Enter the id of the book that you want to delete from the list");
       scanf("%d", &nbr);
-      delete_book(nbr);
+      BOOK=delete_book(BOOK,nbr);
       break;
     }
     case 4:{

@@ -22,59 +22,27 @@ struct borrower *prev;
 }borrower;
 
 //assign Address
-void Ass_add_R(book *p, book *Add);/*{
-if (book == NULL){
-    printf("Erreur  c''est vide \n");
-    return ;
-}
-book->next=Add;
-};*/
+void Ass_add_R(book *p, book *Add);
 void Ass_add_L(book *p, book *Add);
-//assign ID
-void Ass_id_book(book *book,int id );/*{
-if (book == NULL){
-    printf("Erreur  c''est vide \n");
-    return ;
-}
-book->id=id;
+void Ass_id_book(book *book,int id );
 
-}*/
-
-//Ass TITLE
-
-
-void Ass_title_book(book *book, char *title );/*{
-if (book == NULL){
-    printf("Erreur  c''est vide \n");
-    return ;
-}
-strcpy(book->title , title);
-
-}*/
+int  book_id(book *p);
+int  book_copy(book *p);
+void ass_copy_book(book *p,int n);
+void Ass_title_book(book *book, char *title );
 
 //NEXT BOOK
 book* next_book(book* book);
-
 //PREVIOUS BOOK
 book* prev_book(book* book);
-
-
-
-
 //ASSIGN ID BORROWER
 void ass_id_borr(borrower* borrow , int ID);
-
 //ASSIGN NAME BORROWER
-
 void ass_name_borr(borrower* borrow , char *nom);
 //NEXT BORROWER
 borrower* next_borrow(borrower* borrow);
-
 //PREVIOUS BORROWER
 borrower* prev_borrow(borrower* borrow);
 int ID_BOOK(book *p);
-/*{
-   return p->id;
-};*/
 
 
