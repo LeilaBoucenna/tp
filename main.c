@@ -310,6 +310,7 @@ book *current = book_search(k,id);
     {
       current=next_book(current) ;///je traverse la liste
     }
+///change
 
     if (current==k.TAIL)///l ID rajouter est le plus grand donc il sera forcement ajouter a la fin
     {
@@ -489,16 +490,14 @@ if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
       free(temp);
 
       } else {
-        if (temp == k.tail_b) ///FAUT LA REFAIRE  si le livre se trouve a la fin
-        {/////////
-
-
+        if (temp == k.tail_b) ///si le borrower se trouve a la fin
+        {
   if (k.head_b == k.tail_b) // If there's only one node
   {free(k.head_b);
    k.head_b= NULL;
    k.tail_b= NULL; /// now the list is empty
   }
-  else         /// the list is not empty and contains more than one book
+  else         /// the list is not empty and contains more than one  borrower
   {
     borrower *temp = k.tail_b->prev;
     if (temp != NULL) {
@@ -510,7 +509,7 @@ if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
       fprintf(stderr, "Error: Unable to delete the last node.\n");
     }
     }
-        } else /// si le livre se trouve au millieu de la liste
+        } else /// si le  borrower se trouve au millieu de la liste
         {
           borrower *before = temp->prev;
           borrower *after = temp->next;
@@ -530,7 +529,7 @@ if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
   printf("\n Press enter to come back to the menu");
   getch();
 }
-///////////////////
+
 
 
 
