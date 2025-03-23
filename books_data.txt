@@ -5,7 +5,7 @@ ADD_BOOK 4 "Data Mining" "David A. Patterson"
 ADD_BOOK 5 "Computer Graphics" "Nielsen Chuang"
 ADD_BOOK 6 "Quantum Computing" "Andrew S. Tanenbaum"
 ADD_BOOK 7 "Game Development" "Jake VanderPlas"
-ADD_BOOK 8 "Computer Architecture" "Jacob Eisenstein"
+ADD_BOOK 8 "Computer Architecture" "Jacob Eisenstein
 ADD_BOOK 9 "Functional Programming" "Nielsen Chuang"
 ADD_BOOK 10 "Cybersecurity Principles" "Jacob Eisenstein"
 ADD_BOOK 11 "Game Development" "Jacob Eisenstein"

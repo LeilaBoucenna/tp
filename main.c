@@ -184,109 +184,7 @@ list_book addBookman(list_book k,int id, const char *name, const char *author) {
   temp->title[sizeof(temp->title) - 1] = '\0'; // Null-terminate
   strncpy(temp->author, author, sizeof(temp->author) - 1);
   temp->author[sizeof(temp->author) - 1] = '\0'; // Null-terminate
-
-  if (k.HEAD == NULL && k.TAIL == NULL) /// LIST EMPTY
-  {
-    k.HEAD=temp;
-    k.TAIL=temp;
-    Ass_add_L(k.TAIL,NULL);
-    Ass_add_L(k.HEAD,NULL);
-    Ass_add_R(k.HEAD,NULL);
-
-  } else {
-    Ass_add_L(temp,k.TAIL);
-    Ass_add_R(k.TAIL,temp);
-    k.TAIL=temp;
-    Ass_add_R(k.TAIL,NULL);  }
-    return k;
-}
-
-list_book auto_add_book(list_book k) /// this function fill the book list automaticly
-{ k=addBookman(k,9, "Functional Programming", "Nielsen Chuang");
- k=addBookman(k,10, "Cybersecurity Principles", "Jacob Eisenstein");
- k=addBookman(k,11, "Game Development", "Jacob Eisenstein");
- k=addBookman(k,12, "Parallel Programming", "Kazem Sohraby");
- k=addBookman(k,1, "Internet of Things", "Eric Freeman");
- k=addBookman(k,2, "Parallel Programming", "Peter Pacheco");
- k=addBookman(k,3, "Web Development Fundamentals", "Jiawei Han");
- k=addBookman(k,4, "Data Mining", "David A. Patterson");
- k=addBookman(k,5, "Computer Graphics", "Nielsen Chuang");
- k=addBookman(k,6, "Quantum Computing", "Andrew S. Tanenbaum");
- k=addBookman(k,7, "Game Development", "Jake VanderPlas");
- k=addBookman(k,8, "Computer Architecture", "Jacob Eisenstein");
-
- /* addBookman(13, "Wireless Sensor Networks", "Thomas Cormen");
-  addBookman(14, "Deep Learning", "Peter Pacheco");
-  addBookman(15, "Database Management Systems", "Richard Szeliski");
-  addBookman(16, "Programming with Java", "Ben Fry");
-  addBookman(17, "Introduction to Algorithms", "Dennis Ritchie");
-  addBookman(18, "Operating System Concepts", "Tony Parisi");
-  addBookman(19, "The C Programming Language", "Jiawei Han");
-  addBookman(20, "Computer Graphics", "Eric Freeman");
-  addBookman(21, "Object-Oriented Programming", "Sutton & Barto");
-  addBookman(22, "Data Visualization", "Andrew S. Tanenbaum");
-  addBookman(23, "Cyber-Physical Systems", "Ian Goodfellow");
-  addBookman(24, "Data Mining", "Mahadev Satyanarayanan");
-  addBookman(25, "Theory of Computation", "Jake VanderPlas");
-  addBookman(26, "Database Management Systems", "Jon Duckett");
-  addBookman(27, "Embedded Systems", "John F. Hughes");
-  addBookman(28, "Internet of Things", "Alan V. Oppenheim");
-  addBookman(29, "Quantum Computing", "Johnathan Harbour");
-  addBookman(30, "Computer Graphics", "Richard Szeliski");
-  addBookman(31, "Web Development Fundamentals", "Peter Pacheco");
-  addBookman(32, "Cybersecurity Principles", "Alan Dix");
-  addBookman(33, "Data Structures in C", "Raghu Ramakrishnan");
-  addBookman(34, "Software Project Management", "Steve Aukstakalnis");
-  addBookman(35, "Neural Networks", "Jacob Eisenstein");
-  addBookman(36, "Human-Computer Interaction", "Rajkumar Buyya");
-  addBookman(37, "Functional Programming", "Simon Haykin");
-  addBookman(38, "Python for Data Science", "Steve Aukstakalnis");
-  addBookman(39, "Python for Data Science", "Andrew S. Tanenbaum");
-  addBookman(40, "Software Testing", "Richard Szeliski");
-  addBookman(41, "The C Programming Language", "Herbert Schildt");
-  addBookman(42, "Database Management Systems", "Alan Dix");
-  addBookman(43, "Bioinformatics", "Sutton & Barto");
-  addBookman(44, "Data Structures in C", "Christopher Bishop");
-  addBookman(45, "Software Testing", "Arvind Narayanan");
-  addBookman(46, "Computer Vision", "Adrian McEwen");
-  addBookman(47, "Wireless Sensor Networks", "Rajkumar Buyya");
-  addBookman(48, "Embedded Systems", "Nielsen Chuang");
-  addBookman(49, "Cloud Computing", "Rajkumar Buyya");
-  addBookman(50, "Blockchain Technology", "William Stallings");*/
-
-  book *temp = k.HEAD;
-  while (temp != NULL) {
-   ass_copy_book(temp,1);
-   temp=next_book(temp);
-  }
- return k;
-}
-
-//////////////////////////
-list_book add_book(list_book k) { ///on rajoute des livre a la liste et en meme temp en l organise par ordre d id croissant
-  /// first case if the book list is empty we add the first book
-
-  book *temp = k.HEAD;
-  book *current = NULL;
-
-  // let us create individual node
-  temp = (book *)malloc(sizeof(book));
-
-  if (temp == NULL) {
-    printf("Memory allocation failed\n");
-    return k;
-  }
-
-  printf("\nEnter book id: ");
-  scanf("%d", &temp->id);
-  int id =ID_BOOK(temp);
-
-  printf("\nEnter book title: ");
-  scanf("%s", &temp->title);
-
-  printf("\nEnter book author: ");
-  scanf("%s", &temp->author);
-  temp->prev=NULL;
+temp->prev=NULL;
   temp->next=NULL;
   temp->copy = 1;
   /// c bon we created a cell
@@ -303,6 +201,7 @@ book *current = book_search(k,id);
     {
       current->copy = current->copy + 1;
       free(temp);
+      printf("\nThis book already exists\n");
     }
      else ///je traverse la liste pour rajouter le livre au bon endroit
     {book *current=k.HEAD;
@@ -340,6 +239,60 @@ book *current = book_search(k,id);
 
     }
   }
+    return k;
+}
+
+list_book auto_add_book(list_book k) /// this function fill the book list automaticly
+{FILE *fp=fopen("books_data.txt","r");
+  // Character buffer that stores the read character
+  // till the next iteration
+char str[100];
+char command[50];
+char title[50];
+char writer[50];
+int id;
+   if (NULL == fp) {
+        printf("file can't be opened \n");
+          return k ;
+    }
+   while (fgets(str, 100,fp) != NULL) {
+        printf("%s" ,str);
+   if (sscanf(str, "%s %d \"%[^\"]\" \"%[^\"]\"", command, &id, title, writer) == 4) {
+        k=addBookman(k,id,title,writer);
+
+    }
+   }
+ fclose(fp);
+ return k;
+}
+
+
+
+//////////////////////////
+list_book add_book(list_book k) { ///on rajoute des livre a la liste et en meme temp en l organise par ordre d id croissant
+  /// first case if the book list is empty we add the first book
+
+  book *temp = k.HEAD;
+  book *current = NULL;
+
+  // let us create individual node
+  temp = (book *)malloc(sizeof(book));
+
+  if (temp == NULL) {
+    printf("Memory allocation failed\n");
+    return k;
+  }
+
+  printf("\nEnter book id: ");
+  scanf("%d", &temp->id);
+  int id =ID_BOOK(temp);
+
+  printf("\nEnter book title: ");
+  scanf("%s", &temp->title);
+
+  printf("\nEnter book author: ");
+  scanf("%s", &temp->author);
+  k=addBookman(k,ID_BOOK(temp),temp->title,temp->author);
   printf("\n THIS BOOK WAS ADDED SUCCESSFULLY\n");
   printf("\n Press enter to come back to the menu");
   getch();
@@ -538,7 +491,7 @@ list lst ={NULL,NULL};
 list_book BOOK={NULL,NULL};
 ///both the head and the tail of the borrower list are initialized to NULL
   int menu;
-//BOOK=auto_add_book(BOOK);
+BOOK=auto_add_book(BOOK);
 lst=auto_add_borr(lst);
   do {
     system("cls");
