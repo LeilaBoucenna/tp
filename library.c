@@ -112,13 +112,16 @@ int ID_BOOK(book *p)
 
 //QUEUE RELATED FUNCTIONS
 // Function to create a new node
-node* createNode(int n1,int n2,int prio) {
+node* createNode(int n1,int n2,int prio,char titre[100]) {
     node *newnode = (node *)malloc(sizeof(node));
     if (newnode == NULL) {
         return NULL; // Memory allocation failed
     }
     newnode->id_of_borrower = n1;
     newnode->id_of_book = n2;
+
+  strncpy(newnode->title_of_book,titre,sizeof(newnode->title_of_book) - 1); // Ensure buffer is not overflowed
+  newnode->title_of_book[sizeof(newnode->title_of_book) -1] = '\0'; // Null-terminate
 
     newnode->priority = prio;
     newnode->next = NULL;
@@ -128,18 +131,18 @@ node* createNode(int n1,int n2,int prio) {
 // Function to create a new queue
 queue* createQueue() {
     queue *q = (queue *)malloc(sizeof(queue));
+       if (q == NULL) {
+        return NULL; // Memory allocation failed
+    }
     q->head = NULL; // Initialize head to NULL
     return q;
 }
 
 
-queue * enqueue_list(queue *q ,int id1,int id2,int prio)///WORKING GOOD
+queue * enqueue_list(queue *q ,int id1,int id2,int prio,char title[100])///WORKING GOOD
 {//create a new node
-  node *newnode = createNode(id1,id2, prio);//new node is a pointer to the new node
+  node *newnode = createNode(id1,id2,prio,title);//new node is a pointer to the new node
    if (newnode==NULL) return q ; //no memory space left ALLOCATION PROBLEM
-
- ///if the priority is the lowest i will enqueu at the end normally
- ///else im gonna search for the right position to insert it (before the pririty bigger)
 
 // If the queue is empty or the new node has higher priority than the head
  if (q->head==NULL || q->head->priority> prio)
@@ -187,11 +190,18 @@ void freeQueue(queue *q) {
 }
 
 ///lets display the queue
-void display_queue_list(queue *q)
+void display_queue_list(queue *q ,char name[100])
 {node *temp=q->head;
-while (temp !=NULL)
-{   printf("%d -->\t",temp->priority);
-    temp=temp->next;
-}
-printf("NULL\n");
+printf("\t\t\t\t<== LOANS ==>\n\n");
+printf("%-10s   %-20s  %-10s  %-40s  %-20s\n",  "Borrower id","Borrower Name","Book id","Book Title","Due date");
+
+    while (temp != NULL)
+    {
+     printf("%-10d    %-20s  %-10d  %-40s  %-20d\n",temp->id_of_borrower,name,temp->id_of_book,temp->title_of_book,temp->priority);
+      temp=temp->next;
+    }
+
+printf("\n Press ENTER to come back to the menu");
+getch();
+return;
 }

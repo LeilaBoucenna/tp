@@ -14,24 +14,27 @@ struct book *next;
 struct book *prev;
 }book;
 
-typedef struct borrower{
-int id;
-char name[256];
-struct borrower *next;
-struct borrower *prev;
-}borrower;
-
 typedef struct node {
 int id_of_book;
+char title_of_book[100];
 int id_of_borrower;
 int priority;
 struct node *next;
 }node;
 
-typedef struct {
+typedef struct queue {
 struct node *head;
 struct node *tail;
 }queue;
+
+typedef struct borrower{
+int id;
+char name[256];
+struct borrower *next;
+struct borrower *prev;
+queue *individual;
+}borrower;
+
 
 //assign Address
 void Ass_add_R(book *p, book *Add);
@@ -60,9 +63,9 @@ int ID_BOOK(book *p);
 
 
 //QUEUE RELATED FUNCTIONS
-void display_queue_list(queue *q);
+void display_queue_list(queue *q ,char name[100]);
 void freeQueue(queue *q);
 int dequeue_list(queue *q );
-queue * enqueue_list(queue *q , int id1,int id2,int prio);
+queue * enqueue_list(queue *q ,int id1,int id2,int prio,char title[100]);
 queue* createQueue();
-node* createNode(int n1,int n2,int prio);
+node* createNode(int n1,int n2,int prio,char title[100]);

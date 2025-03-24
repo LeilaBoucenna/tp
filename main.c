@@ -21,6 +21,7 @@ int id;
 char name[256];
 struct borrower *next;
 struct borrower *prev;
+queue *individual;
 }borrower;
 
 */
@@ -34,16 +35,15 @@ typedef struct list{
 
 
 typedef struct list_book
-{
-    book* HEAD;
+{   book* HEAD;
     book* TAIL;
 }list_book;
 
-typedef struct loans{
+/*typedef struct loans{
 int book_id;
-int priority_date;///due date
+int priority_date;
 struct loans* next;
-}loans;
+}loans;*/
 
 
 
@@ -141,8 +141,7 @@ list_book delete_book(list_book k,int n) /// WORKING GOOD
         }
       }
       printf("Book with ID %d issued/deleted successfully .\n", n);
-      printf("\n Press enter to come back to the menu");
-      getch();
+
       return k;
     }
    temp=next_book(temp);
@@ -354,7 +353,7 @@ borrower* search_borr(borrower* head,int ID){
 
 list add_borr(list k,int IDs, char name[50]){  ///to change add name then family name
         if (search_borr(k.head_b,IDs)!=NULL){
-            printf("l'etudiant existe deja !\n");
+            printf("This ID is already taken by someone else !\n");
             printf("Press enter to comeback to the menu");
             getch();
         return k;
@@ -374,6 +373,7 @@ list add_borr(list k,int IDs, char name[50]){  ///to change add name then family
         strcpy(newOne->name,name);
         newOne->next=NULL;///initialize prev and next to NULL
         newOne->prev=NULL;
+        newOne->individual=NULL;
 
         if(k.head_b==NULL ){
            k.head_b=newOne;
@@ -419,7 +419,6 @@ void display_borrower(list k)
 printf("\nPress ENTER to comeback to the menu.");
 getch();
 }
-///leila
 
 list delete_borr_id(list k, int ID){
     bool found=false;
@@ -485,7 +484,7 @@ if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
   getch();
 }
 
-list_book issue_book(list_book k,list s,queue q)
+list_book issue_book(list_book k,list s,queue *q)
 { int due_date;
 printf("In order to issue a book you need to be a member of the library.\n");
 printf("Please enter your ID\n");
@@ -508,19 +507,25 @@ else
  p=book_search(k,n1);
    if (p==NULL)
     {
-     printf("Sorry this book is not available at this moment.\n Press enter to go to the menu.");
+     printf("Sorry this book is not available at this moment.\n Press enter to go to the menu.\n");
      getch();
 
    }
    else
    {printf("This book %s written by %s is available \n this is the number of copies available in this librairy %d\n",p->title,p->author,p->copy);
-   k=delete_book(k,n);
-   printf("Please choose a date to return the book (write it under this format YYYY/MM/DD)");
+   printf("\n Please choose a date to return the book (write it under this format YYYY/MM/DD)");
    scanf("%d",&due_date);
-   q=enqueue_list(q,n,n1,due_date);
 
+   if (temp->individual==NULL)//no loans for this person or borrower
+   {
+       temp->individual=createQueue();
+   }
+   temp->individual=enqueue_list(temp->individual,n,n1,due_date,p->title);
+   display_queue_list(temp->individual,temp->name);
+   k=delete_book(k,n1);
    }
 }
+
 return k;
 }
 
@@ -593,7 +598,7 @@ lst=auto_add_borr(lst);
      break;
     }
    case 7 :
-    {BOOK=issue_book(BOOK,lst);
+    {BOOK=issue_book(BOOK,lst,loans);
      break;
     }
 
