@@ -39,12 +39,14 @@ typedef struct list_book
     book* TAIL;
 }list_book;
 
-/// var globale///!!! a re checker
+typedef struct loans{
+int book_id;
+int priority_date;///due date
+struct loans* next;
+}loans;
 
-/////////////////////////
-/*borrower *BORROW = NULL;
-book *HEAD = NULL;
-book *TAIL = NULL;*/
+
+
 
 /// this one working and used model abstract
 book *book_search(list_book k,int n) /// search for the book by his id if founded returns it
@@ -138,7 +140,7 @@ list_book delete_book(list_book k,int n) /// WORKING GOOD
           free(temp);
         }
       }
-      printf("Book with ID %d deleted.\n", n);
+      printf("Book with ID %d issued/deleted successfully .\n", n);
       printf("\n Press enter to come back to the menu");
       getch();
       return k;
@@ -483,10 +485,50 @@ if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
   getch();
 }
 
+list_book issue_book(list_book k,list s,queue q)
+{ int due_date;
+printf("In order to issue a book you need to be a member of the library.\n");
+printf("Please enter your ID\n");
+int n;
+int n1;
+scanf("%d",&n);
+borrower *head=s.head_b;
+borrower* temp=NULL;
+temp=search_borr(head,n);
+if (temp==NULL)//this person is not a menber and need to register first before taking a book
+{printf("SORRY you are not a member you cannot issue a book.\n Please register first (add member)!\n Press enter to go to the menu.");
+getch();
+return k;
+}
+else
+{printf("Welcome Back %s \n",temp->name);
+ printf("Enter the ID of the book that you want to take :");   ///add also search by title
+ scanf("%d",&n1);
+ book *p=NULL;
+ p=book_search(k,n1);
+   if (p==NULL)
+    {
+     printf("Sorry this book is not available at this moment.\n Press enter to go to the menu.");
+     getch();
+
+   }
+   else
+   {printf("This book %s written by %s is available \n this is the number of copies available in this librairy %d\n",p->title,p->author,p->copy);
+   k=delete_book(k,n);
+   printf("Please choose a date to return the book (write it under this format YYYY/MM/DD)");
+   scanf("%d",&due_date);
+   q=enqueue_list(q,n,n1,due_date);
+
+   }
+}
+return k;
+}
+
 
 
 
 int main() {
+queue *loans=createQueue();
 list lst ={NULL,NULL};
 list_book BOOK={NULL,NULL};
 ///both the head and the tail of the borrower list are initialized to NULL
@@ -497,16 +539,13 @@ lst=auto_add_borr(lst);
     system("cls");
     printf("Library management system\n\n");
     printf("1-Display book list.\n");
-    printf("2-Add book or Return a book.\n"); /// add and return are not the
-                                              /// same,in return i need to ask
-                                              /// for the student id and maybe
-                                              /// other stuff
+    printf("2-Add book or Return a book.\n"); /// add and return are not the same,in return i need to askfor the student id and maybe other stuff
     printf("3-Remove a book or Take a book.\n"); /// but in add i need nothing
-
     printf("4-Display borrower list.\n");
-    printf("5-Add a borrower.\n");
+    printf("5-Add a new member to the library .\n");
     /// search book dont forget it
     printf("6-Delete a borrower.\n");
+    printf("7-Issue a book/empreinter un livre\n");
     printf("9-Loan list.\n");
     printf("8-Display statistics of the total number of books and borrowers, "
            "active loans, and overdue books.\n");
@@ -553,9 +592,9 @@ lst=auto_add_borr(lst);
      lst=delete_borr_id(lst,n);
      break;
     }
-
-    case 0: {
-      exit(0);///Happy ending
+   case 7 :
+    {BOOK=issue_book(BOOK,lst);
+     break;
     }
 
     default: {
@@ -565,6 +604,7 @@ lst=auto_add_borr(lst);
     }
     }
 
-  } while (menu != 10);
+  } while (menu != 0);
+
   return 0;
 }
