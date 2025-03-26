@@ -63,9 +63,10 @@ int ID_BOOK(book *p);
 
 
 //QUEUE RELATED FUNCTIONS
-void display_queue_list(queue *q ,char name[100]);
+void display_personnal_loans(queue *q ,char name[100]);
 void freeQueue(queue *q);
 int dequeue_list(queue *q );
 queue * enqueue_list(queue *q ,int id1,int id2,int prio,char title[100]);
 queue* createQueue();
 node* createNode(int n1,int n2,int prio,char title[100]);
+void display_all_loans(queue *q ,char name[100]);

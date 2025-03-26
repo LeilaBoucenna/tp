@@ -190,9 +190,14 @@ void freeQueue(queue *q) {
 }
 
 ///lets display the queue
-void display_queue_list(queue *q ,char name[100])
+void display_personnal_loans(queue *q ,char name[100])
+{if (q==NULL)
+{printf("This member has NO active loan in this library.\n");
+
+}
+else
 {node *temp=q->head;
-printf("\t\t\t\t<== LOANS ==>\n\n");
+printf("\t\t\t\t<== PERSONAL LOANS ==>\n\n");
 printf("%-10s   %-20s  %-10s  %-40s  %-20s\n",  "Borrower id","Borrower Name","Book id","Book Title","Due date");
 
     while (temp != NULL)
@@ -201,7 +206,19 @@ printf("%-10s   %-20s  %-10s  %-40s  %-20s\n",  "Borrower id","Borrower Name","B
       temp=temp->next;
     }
 
-printf("\n Press ENTER to come back to the menu");
-getch();
+
+}
+return;
+}
+
+
+void display_all_loans(queue *q ,char name[100])
+{
+node *temp=q->head;
+    while (temp != NULL)
+    {
+     printf("%-10d    %-20s  %-10d  %-40s  %-20d\n",temp->id_of_borrower,name,temp->id_of_book,temp->title_of_book,temp->priority);
+      temp=temp->next;
+    }
 return;
 }
