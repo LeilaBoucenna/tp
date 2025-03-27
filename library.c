@@ -112,7 +112,7 @@ int ID_BOOK(book *p)
 
 //QUEUE RELATED FUNCTIONS
 // Function to create a new node
-node* createNode(int n1,int n2,int prio,char titre[100]) {
+node * createNode(int n1,int n2,int prio, const char* title, const char* author) {
     node *newnode = (node *)malloc(sizeof(node));
     if (newnode == NULL) {
         return NULL; // Memory allocation failed
@@ -120,11 +120,16 @@ node* createNode(int n1,int n2,int prio,char titre[100]) {
     newnode->id_of_borrower = n1;
     newnode->id_of_book = n2;
 
-  strncpy(newnode->title_of_book,titre,sizeof(newnode->title_of_book) - 1); // Ensure buffer is not overflowed
+  strncpy(newnode->title_of_book,title,sizeof(newnode->title_of_book) - 1); // Ensure buffer is not overflowed
   newnode->title_of_book[sizeof(newnode->title_of_book) -1] = '\0'; // Null-terminate
+
+  strncpy(newnode->writer,author,sizeof(newnode->writer) - 1); // Ensure buffer is not overflowed
+  newnode->writer[sizeof(newnode->writer) -1] = '\0'; // Null-terminate
+
 
     newnode->priority = prio;
     newnode->next = NULL;
+
     return newnode;
 }
 
@@ -132,16 +137,17 @@ node* createNode(int n1,int n2,int prio,char titre[100]) {
 queue* createQueue() {
     queue *q = (queue *)malloc(sizeof(queue));
        if (q == NULL) {
-        return NULL; // Memory allocation failed
+        return NULL;     // Memory allocation failed
     }
-    q->head = NULL; // Initialize head to NULL
+    q->head = NULL;    // Initialize head to NULL
+    q->tail=NULL;     // Initialize the tail to NULL
     return q;
 }
 
 
-queue * enqueue_list(queue *q ,int id1,int id2,int prio,char title[100])///WORKING GOOD
+queue * enqueue_list(queue *q ,int id1,int id2,int prio,const char* title,const char* author)///WORKING GOOD
 {//create a new node
-  node *newnode = createNode(id1,id2,prio,title);//new node is a pointer to the new node
+  node *newnode = createNode(id1,id2,prio,title,author);//new node is a pointer to the new node
    if (newnode==NULL) return q ; //no memory space left ALLOCATION PROBLEM
 
 // If the queue is empty or the new node has higher priority than the head
@@ -160,22 +166,19 @@ while (current->next != NULL && current->next->priority <= prio) {
     }return q;
 }
 
+// Function to dequeue a node from the queue
+queue * dequeue_list(queue *q )///WORKING GOOD
+{                                 //check to see if the queue is empty
+    if (q->head==NULL) return q; // Queue is empty; no node to remove
 
-int dequeue_list(queue *q )///WORKING GOOD
-{//check to see if the queue is empty
-    if (q->head==NULL) return 0;
-
-    //save the head of the queue
-    node * temp=q->head;
-
-    //save the result we re going to return
-    int result =temp->id_of_borrower;
+    node * temp=q->head; //save the head of the queue
     q->head=q->head->next;
-    if (q->head==NULL)
-    {q->tail=NULL;
+
+    if (q->head==NULL){ // If the queue is now empty, set tail to NULL
+    q->tail=NULL;
     }
     free(temp);
-    return(result);
+    return(q);
 }
 
 // Function to free the queue

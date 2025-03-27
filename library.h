@@ -17,6 +17,7 @@ struct book *prev;
 typedef struct node {
 int id_of_book;
 char title_of_book[100];
+char writer[100];
 int id_of_borrower;
 int priority;
 struct node *next;
@@ -65,8 +66,8 @@ int ID_BOOK(book *p);
 //QUEUE RELATED FUNCTIONS
 void display_personnal_loans(queue *q ,char name[100]);
 void freeQueue(queue *q);
-int dequeue_list(queue *q );
-queue * enqueue_list(queue *q ,int id1,int id2,int prio,char title[100]);
+queue * dequeue_list(queue *q );
+queue * enqueue_list(queue *q ,int id1,int id2,int prio,const char* title,const char* author);
 queue* createQueue();
-node* createNode(int n1,int n2,int prio,char title[100]);
+node * createNode(int n1,int n2,int prio, const char* title, const char* author);
 void display_all_loans(queue *q ,char name[100]);

@@ -39,11 +39,10 @@ typedef struct list_book
     book* TAIL;
 }list_book;
 
-/*typedef struct loans{
-int book_id;
-int priority_date;
-struct loans* next;
-}loans;*/
+int loans[3]={0,0,0}; //this an array the first case it s for nbr of active loan
+                     // second one overdue book
+                     //third one total nmr of book
+                     //fourth total nbr of borrower
 
 
 
@@ -70,11 +69,22 @@ book *book_search(list_book k,int n) /// search for the book by his id if founde
 
 list_book delete_first(list_book k) /// WORKING GOOD
 {
-  book *temp = k.HEAD;
-  k.HEAD = next_book(k.HEAD);
-  Ass_add_R(temp, NULL);
-  Ass_add_L(k.HEAD, NULL);
-  free(temp);
+    if (k.HEAD == NULL) {
+        printf("List is empty. Nothing to delete.\n");
+        return k; // Nothing to delete if the list is empty
+    }
+
+    book *temp = k.HEAD; // Store the current head node
+    k.HEAD = next_book(k.HEAD); // Move head pointer to the next node
+
+    // Ensure the new head is properly linked
+    if (k.HEAD != NULL) {
+        Ass_add_L(k.HEAD, NULL); // Link the left pointer if necessary
+    }
+
+    Ass_add_R(temp, NULL); // Unlink the current head
+    free(temp); // Deallocate memory for the removed node
+return k;
 }
 
 //////////////////
@@ -135,9 +145,8 @@ list_book delete_book(list_book k,int n) /// WORKING GOOD
           free(temp);
         }
         }
-       }
+       }//book deleted succesfully
 
-printf("Book with ID %d with title %s issued/deleted successfully .\n", n,temp->title);
 return k;
     }
   else     //the book  doesnt exist in the library
@@ -498,7 +507,7 @@ if (temp!=NULL)//this person is not a menber and need to register first before t
    {
        temp->individual=createQueue();
    }
-   temp->individual=enqueue_list(temp->individual,member,idbook,date,p->title);
+   temp->individual=enqueue_list(temp->individual,member,idbook,date,p->title,p->author);
    k=delete_book(k,idbook);
    }
    }
@@ -510,8 +519,8 @@ if (temp!=NULL)//this person is not a menber and need to register first before t
 
 
 
-list_book issue_book_menu(list_book k,list s,queue *q)
-{ int due_date;
+list_book issue_book_menu(list_book k,list s,queue *q){
+int due_date;
 borrower *head=s.head_b;
 borrower* temp=NULL;
 book *p=NULL;
@@ -547,16 +556,14 @@ else
     scanf("%d",&due_date);
     k=issue_book(k,s,n,n1,due_date);
     printf("BOOK ISSUE SUCCESSFULLY");
-    printf("This book is not available in this library.");
     printf("\nPress ENTER to comeback to the menu.");
     getch();
     return k;
 }
 }
 }
-
-void display_loans(list s)
-{ printf("1-Display personnal loans .\n");
+void display_loans(list s){
+printf("1-Display personnal loans .\n");
 printf("2-Display all active loans in the library.\n ");
 printf("Please choose number 1 or 2 any other number will make you come back to the menu :");
 int choice;
@@ -616,6 +623,39 @@ printf("Enter the ID of the borrower that you want to delete from the list  :  "
      s=delete_borr_id(s,n);
      return s;
 }
+
+
+list_book return_book_menu(list_book k,list s)
+{
+borrower *head=s.head_b;
+borrower* temp=NULL;
+book *p=NULL;
+printf("In order to return a book you need to be a member of the library.\n");
+printf("Please enter your ID\n");
+int n;
+scanf("%d",&n);
+temp=search_borr(head,n);
+if (temp==NULL)
+{
+    printf("You are not a member you cannot return a book\n");
+
+}
+else
+{printf("Welcome Back %s \n",temp->name);//i ask him to enter todays date i compare then i know if this book is overduee if yes i incremente une case d un tableau
+                                         //et je desincrement le active loan
+node *p=temp->individual->head;//we remove the first loan
+ printf("The book :%s is returned successfully",p->title_of_book);
+ k=addBookman(k,p->id_of_book,p->title_of_book,p->writer);
+ temp->individual=dequeue_list(temp->individual);
+}
+printf("Press ENTER to comeback to the menu.");
+getch();
+return k;
+}
+
+
+
+
 int main() {
 queue *loans=createQueue();
 list lst ={NULL,NULL};
@@ -677,7 +717,7 @@ lst=auto_add_borr(lst);
           }
    case 8:
          {
-
+          BOOK=return_book_menu(BOOK,lst);
           break;
          }
    case 9 :
