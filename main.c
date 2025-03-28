@@ -39,7 +39,7 @@ typedef struct list_book
     book* TAIL;
 }list_book;
 
-int loans[3]={0,0,0}; //this an array the first case it s for nbr of active loan
+typedef int arr[4]; //this an array the first case it s for nbr of active loan
                      // second one overdue book
                      //third one total nmr of book
                      //fourth total nbr of borrower
@@ -116,7 +116,7 @@ list_book delete_last_node(list_book k) /// WORKING GOOD
 }
 ///!!!!!!!!!!!!do i delete it completely or deincrment the nmb of copy availble
 ///until =0 at this moment i delete completly
-list_book delete_book(list_book k,int n) /// WORKING GOOD
+list_book delete_book(list_book k,int n,arr tab) /// WORKING GOOD
 {
   book *temp =book_search(k,n);
   if(temp!=NULL) //this book exist in the library
@@ -146,7 +146,7 @@ list_book delete_book(list_book k,int n) /// WORKING GOOD
         }
         }
        }//book deleted succesfully
-
+tab[2]--;
 return k;
     }
   else     //the book  doesnt exist in the library
@@ -178,7 +178,7 @@ void affiche_book(list_book k) {
   }
 }
 
-list_book addBookman(list_book k,int id, const char *name, const char *author) {
+list_book addBookman(list_book k,int id, const char *name, const char *author,arr tab) {
   book *temp = (book *)malloc(sizeof(book));
 
   if (temp == NULL) {
@@ -247,10 +247,11 @@ book *current = book_search(k,id);
 
     }
   }
+  tab[2]++;
     return k;
 }
 
-list_book auto_add_book(list_book k) /// this function fill the book list automaticly
+list_book auto_add_book(list_book k,arr tab) /// this function fill the book list automaticly
 {FILE *fp=fopen("books_data.txt","r");
   // Character buffer that stores the read character
   // till the next iteration
@@ -266,7 +267,7 @@ int id;
    while (fgets(str, 100,fp) != NULL) {
         printf("%s" ,str);
    if (sscanf(str, "%s %d \"%[^\"]\" \"%[^\"]\"", command, &id, title, writer) == 4) {
-        k=addBookman(k,id,title,writer);
+        k=addBookman(k,id,title,writer,tab);
 
     }
    }
@@ -277,7 +278,7 @@ int id;
 
 
 //////////////////////////
-list_book add_book(list_book k) { ///on rajoute des livre a la liste et en meme temp en l organise par ordre d id croissant
+list_book add_book(list_book k,arr tab) { ///on rajoute des livre a la liste et en meme temp en l organise par ordre d id croissant
   /// first case if the book list is empty we add the first book
 
   book *temp = k.HEAD;
@@ -300,7 +301,7 @@ list_book add_book(list_book k) { ///on rajoute des livre a la liste et en meme 
 
   printf("\nEnter book author: ");
   scanf("%s", &temp->author);
-  k=addBookman(k,ID_BOOK(temp),temp->title,temp->author);
+  k=addBookman(k,ID_BOOK(temp),temp->title,temp->author,tab);
   printf("\n THIS BOOK WAS ADDED SUCCESSFULLY\n");
   printf("\n Press enter to come back to the menu");
   getch();
@@ -358,7 +359,7 @@ borrower* search_borr(borrower* head,int ID){
 
     }
 
-list add_borr(list k,int IDs, char name[50]){  ///to change add name then family name
+list add_borr(list k,int IDs, char name[50],arr tab){  ///to change add name then family name
         if (search_borr(k.head_b,IDs)!=NULL){
             printf("This ID is already taken by someone else !\n");
             printf("Press enter to comeback to the menu");
@@ -394,15 +395,17 @@ list add_borr(list k,int IDs, char name[50]){  ///to change add name then family
             k.tail_b->next=NULL;
         }
        }
+       tab[3]++;;
        return k;
+
         }
 
-list auto_add_borr(list k)
-{k=add_borr(k,47,"leila");
-k=add_borr(k,45,"Amina");
-k=add_borr(k,741,"ROSE");
-k=add_borr(k,125,"Jennie");
-k=add_borr(k,412,"HIBA");
+list auto_add_borr(list k,arr tab)
+{k=add_borr(k,47,"leila",tab);
+k=add_borr(k,45,"Amina",tab);
+k=add_borr(k,741,"ROSE",tab);
+k=add_borr(k,125,"Jennie",tab);
+k=add_borr(k,412,"HIBA",tab);
  return k;
 }
 
@@ -427,7 +430,7 @@ printf("\nPress ENTER to comeback to the menu.");
 getch();
 }
 
-list delete_borr_id(list k, int ID){
+list delete_borr_id(list k, int ID,arr tab){
     bool found=false;
 if (k.head_b==NULL){
   printf("The list is empty.\n");
@@ -482,6 +485,7 @@ if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
       printf("Borrower with ID %d deleted.\n", ID);
       printf("\n Press enter to come back to the menu");
       getch();
+      tab[3]--;
       return k;
     }
     temp = temp->next;
@@ -492,15 +496,15 @@ if (temp->id == ID) // je le supprime et je fais un lien entr prev et next si
 }
 
 
-list_book issue_book(list_book k,list s,int member,int idbook,int date)
+list_book issue_book(list_book k,list s,int member,int idbook,int date,arr tab)
 {borrower *head=s.head_b;
  borrower* temp=NULL;
  book *p=NULL;
 temp=search_borr(head,member);
-p=book_search(k,idbook);
-if (temp!=NULL)//this person is not a menber and need to register first before taking a book
-{
 
+if (temp!=NULL)//this person is  a menber and
+{
+ p=book_search(k,idbook);
  if (p!=NULL)
     {
    if (temp->individual==NULL)//no loans for this person or borrower
@@ -508,7 +512,9 @@ if (temp!=NULL)//this person is not a menber and need to register first before t
        temp->individual=createQueue();
    }
    temp->individual=enqueue_list(temp->individual,member,idbook,date,p->title,p->author);
-   k=delete_book(k,idbook);
+   k=delete_book(k,idbook,tab);
+   tab[0]++;
+
    }
    }
 
@@ -519,7 +525,7 @@ if (temp!=NULL)//this person is not a menber and need to register first before t
 
 
 
-list_book issue_book_menu(list_book k,list s,queue *q){
+list_book issue_book_menu(list_book k,list s,queue *q,arr tab){
 int due_date;
 borrower *head=s.head_b;
 borrower* temp=NULL;
@@ -554,7 +560,7 @@ else
  {  printf("The book : %s written by %s is available!!",p->title,p->author);
     printf("\n Please choose a date to return the book (write it under this format YYYYMMDD)");
     scanf("%d",&due_date);
-    k=issue_book(k,s,n,n1,due_date);
+    k=issue_book(k,s,n,n1,due_date,tab);
     printf("BOOK ISSUE SUCCESSFULLY");
     printf("\nPress ENTER to comeback to the menu.");
     getch();
@@ -595,38 +601,37 @@ case 2:
 printf("\nPress ENTER to comeback to the menu.");
 getch();
 }
-list_book manually_delete_book(list_book k){
+list_book manually_delete_book(list_book k,arr tab){
       int nbr;
       printf("Enter the id of the book that you want to delete from the list");
       scanf("%d", &nbr);
-      k=delete_book(k,nbr);
+      k=delete_book(k,nbr,tab);
       return k;
 }
-list manually_add_member(list s){
+list manually_add_member(list s,arr tab){
       printf("Enter the full name of the new borrower : ");
        char nom[100];
        scanf("%s",&nom);
       printf("Enter ID : ");
       int n;
       scanf("%d",&n);
-      s=add_borr(s,n,nom);
+      s=add_borr(s,n,nom,tab);
       printf("\n New member added successfully\n");
       printf("\nPress ENTER to comeback to the menu.");
       getch();
       return s;
 
 };
-list manually_delete_member(list s){
+list manually_delete_member(list s,arr tab){
 printf("Enter the ID of the borrower that you want to delete from the list  :  ");
      int n;
      scanf("%d",&n);
-     s=delete_borr_id(s,n);
+     s=delete_borr_id(s,n,tab);
      return s;
 }
 
 
-list_book return_book_menu(list_book k,list s)
-{
+list_book return_book_menu(list_book k,list s,arr tab){
 borrower *head=s.head_b;
 borrower* temp=NULL;
 book *p=NULL;
@@ -637,17 +642,32 @@ scanf("%d",&n);
 temp=search_borr(head,n);
 if (temp==NULL)
 {
-    printf("You are not a member you cannot return a book\n");
+printf("You are not a member you cannot return a book\n");
 
-}
+} //i ask him to enter todays date i compare then i know if this book is overduee if yes i incremente
 else
-{printf("Welcome Back %s \n",temp->name);//i ask him to enter todays date i compare then i know if this book is overduee if yes i incremente une case d un tableau
-                                         //et je desincrement le active loan
-node *p=temp->individual->head;//we remove the first loan
- printf("The book :%s is returned successfully",p->title_of_book);
- k=addBookman(k,p->id_of_book,p->title_of_book,p->writer);
+{printf("Welcome Back %s \n",temp->name);//we remove the first loan //et je desincrement le active loan
+                                       //une case d un tableau
+node *q=temp->individual->head;
+ if (temp->individual==NULL){
+ printf("Dear member you have no loan in this library.\n");
+ }
+ else{
+    printf("Enter Today's date(in this FORMAT YYYYMMDD): ") ;
+ int return_date;
+ scanf("%d",&return_date);
+ if (return_date>q->priority)//this book is over due
+ {
+   printf("This book is overdue you will have to pay for your delay!!\n  ");
+   tab[1]++;  //increment the value of over due book
+ }
+ printf("The book :%s is returned successfully.\n",q->title_of_book);
+ k=addBookman(k,q->id_of_book,q->title_of_book,q->writer,tab);
+ tab[0]--;
  temp->individual=dequeue_list(temp->individual);
 }
+ }
+
 printf("Press ENTER to comeback to the menu.");
 getch();
 return k;
@@ -657,13 +677,14 @@ return k;
 
 
 int main() {
+arr stat={0,0,0,0}; //init the values
 queue *loans=createQueue();
 list lst ={NULL,NULL};
 list_book BOOK={NULL,NULL};//both the head and the tail of the borrower list are initialized to NULL
 
   int menu;
-BOOK=auto_add_book(BOOK);
-lst=auto_add_borr(lst);
+BOOK=auto_add_book(BOOK,stat);
+lst=auto_add_borr(lst,stat);
   do {
     system("cls");
     printf("Library management system\n\n");
@@ -672,7 +693,7 @@ lst=auto_add_borr(lst);
     printf("3-Remove a book or Take a book.\n"); /// but in add i need nothing
     printf("4-Display borrower list.\n");
     printf("5-Add a new member to the library .\n");  /// search book dont forget it
-    printf("6-Delete a borrower.\n");
+    printf("6-Delete a member.\n");
     printf("7-Issue a book'\n");
     printf("8-Return a book.\n");
     printf("9-Display Loan list.\n");
@@ -688,11 +709,11 @@ lst=auto_add_borr(lst);
             break;
             }
     case 2: {
-            BOOK=add_book(BOOK);
+            BOOK=add_book(BOOK,stat);
             break;   /// will be changed the same way add borrower
             }
     case 3: {
-            BOOK=manually_delete_book(BOOK);
+            BOOK=manually_delete_book(BOOK,stat);
             break;
            }
     case 4:{
@@ -701,23 +722,23 @@ lst=auto_add_borr(lst);
            }
    case 5:
            {
-            lst=manually_add_member(lst);
+            lst=manually_add_member(lst,stat);
             break;
 
           }
    case 6 :
           {
-           lst=manually_delete_member(lst);
+           lst=manually_delete_member(lst,stat);
            break;
           }
    case 7 :
           {
-           BOOK=issue_book_menu(BOOK,lst,loans);
+           BOOK=issue_book_menu(BOOK,lst,loans,stat);
            break;
           }
    case 8:
          {
-          BOOK=return_book_menu(BOOK,lst);
+          BOOK=return_book_menu(BOOK,lst,stat);
           break;
          }
    case 9 :
@@ -725,6 +746,14 @@ lst=auto_add_borr(lst);
          display_loans(lst);
          break;
          }
+   case 10:
+    { printf("Array contents:\n");
+    for (int i = 0; i < 4; i++) {
+        printf("arr[%d] = %d\n", i, stat[i]);
+    }
+    getch();
+        break;
+    }
 
     default: {
       printf("Invalid Choice...\n\n");
