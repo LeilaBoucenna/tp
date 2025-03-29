@@ -64,6 +64,9 @@ void ass_copy_book(book *p,int n)
 book* next_book(book* book){
 return book->next;
 }
+int borrower_id(borrower* p){
+return p->id;
+}
 
 //PREVIOUS BOOK
 book* prev_book(book* book){
@@ -207,6 +210,7 @@ else
 printf("\t\t\t\t<== PERSONAL LOANS ==>\n\n");
 printf("%-10s   %-20s  %-10s  %-40s  %-20s\n",  "Borrower id","Borrower Name","Book id","Book Title","Due date");
 
+    while (temp != NULL)
     while (temp != NULL)
     {
      printf("%-10d    %-20s  %-10d  %-40s  %-20d\n",temp->id_of_borrower,name,temp->id_of_book,temp->title_of_book,temp->priority);
