@@ -81,7 +81,11 @@ int  book_copy(book *p)
 {
     return p->copy;
 }
-
+//ID BORROWER
+int ID_Borr(borrower *p){
+int k=p->id;
+return k;
+}
 
 
 //ASSIGN ID BORROWER
