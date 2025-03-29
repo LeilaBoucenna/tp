@@ -358,8 +358,58 @@ borrower* search_borr(borrower* head,int ID){
     return NULL;
 
     }
+///UPDATE HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+list_book add_book(list_book k,arr tab) { ///on rajoute des livre a la liste et en meme temp en l organise par ordre d id croissant
+  /// first case if the book list is empty we add the first book
 
-list add_borr(list k,int IDs, char name[50],arr tab){  ///to change add name then family name
+  book *temp = k.HEAD;
+  book *current = NULL;
+
+  // let us create individual node
+  temp = (book *)malloc(sizeof(book));
+
+  if (temp == NULL) {
+    printf("Memory allocation failed\n");
+    return k;
+  }
+
+  printf("\nEnter book id: ");
+  scanf("%d", &temp->id);
+  int id =ID_BOOK(temp);
+
+  printf("\nEnter book title: ");
+  scanf("%s", &temp->title);
+
+  printf("\nEnter book author: ");
+  scanf("%s", &temp->author);
+  k=addBookman(k,ID_BOOK(temp),temp->title,temp->author,tab);
+  printf("\n THIS BOOK WAS ADDED SUCCESSFULLY\n");
+  printf("\n Press enter to come back to the menu");
+  getch();
+  return k;
+}
+borrower* search_borr(borrower* head,int ID){
+
+    borrower* current= head;
+    while(current !=NULL){
+        if (current->id == ID){
+            return current;
+            }
+        current= current->next;
+
+    }
+    return NULL;
+}
+list addBorrman(list k,int IDs, char *name,int tab[]){  ///to change add name then family name
+
+    borrower* newOne= (borrower*)malloc(sizeof(borrower));///create a new cell
+        if (newOne == NULL) {
+            printf("Memory allocation failed.\n");
+             printf("Press enter to comeback to the menu");
+
+            getch();
+            return k; // Return the unchanged list
+        }
         if (search_borr(k.head_b,IDs)!=NULL){
             printf("This ID is already taken by someone else !\n");
             printf("Press enter to comeback to the menu");
@@ -368,58 +418,115 @@ list add_borr(list k,int IDs, char name[50],arr tab){  ///to change add name the
         }
 
 
-        borrower* newOne= (borrower*)malloc(sizeof(borrower));///create a new cell
-        if (newOne == NULL) {
-            printf("Memory allocation failed.\n");
-             printf("Press enter to comeback to the menu");
-            getch();
-            return k; // Return the unchanged list
-        }
        else
        {
-        newOne->id=IDs;
-        strcpy(newOne->name,name);
-        newOne->next=NULL;///initialize prev and next to NULL
-        newOne->prev=NULL;
-        newOne->individual=NULL;
+           ass_id_borr(newOne,IDs);
+           ass_name_borr(newOne,name);
+           newOne->prev=NULL;
+           newOne->next=NULL;
+       }
 
-        if(k.head_b==NULL ){
+        if(k.head_b==NULL )//borrowers list is empty
+            {
            k.head_b=newOne;
             k.tail_b=newOne;
         }
         else{
+        borrower *current = k.head_b;
+        while ((borrower_id(current)< IDs) && current->next!=NULL){
+            current=next_borrow(current);
+        }
+
+        if(current==k.tail_b){
+            k.tail_b->next=newOne;
             newOne->prev=k.tail_b;
-
-            (k.tail_b)->next=newOne;
-            (k.tail_b)=newOne;
-            k.tail_b->next=NULL;
-        }
-       }
-       tab[3]++;;
-       return k;
+            k.tail_b=newOne;
 
         }
+        else{
+            if(current==k.head_b){
+            newOne->next=k.head_b;
+            k.head_b->prev=newOne;
+            k.head_b=newOne;
 
-list auto_add_borr(list k,arr tab)
+            }
+         else{
+            borrower* previous=current->prev;
+            previous->next=newOne;
+            newOne->next=current;
+            newOne->prev=previous;
+            current->prev=newOne;
+
+
+         }
+
+        }
+
+        }
+
+
+tab[3]++;
+return k;
+
+        }
+
+
+
+
+list add_borr(list k,int tab[]) {
+  /// first case if the borrower list is empty we add the first borrower
+
+  borrower *temp = k.head_b;
+  borrower *current = NULL;
+
+  // let us create individual node
+  temp = (borrower *)malloc(sizeof(borrower));
+
+  if (temp == NULL) {
+    printf("Memory allocation failed\n");
+    return k;
+  }
+
+  printf("\nEnter borrower id: ");
+  scanf("%d", &temp->id);
+  int id ;
+  id = ID_Borr(temp);
+
+
+
+  printf("\nEnter borrower Name_LastName: ");
+  scanf("%s", &temp->name);
+list q =k;
+  q=addBorrman(q,ID_Borr(temp),temp->name,tab);
+
+  printf("\n THIS Borrower WAS ADDED SUCCESSFULLY\n");
+  printf("\n Press enter to come back to the menu");
+  getch();
+  return q;
+}
+
+
+
+/*list auto_add_borr(list k,arr tab)
 {k=add_borr(k,47,"leila",tab);
 k=add_borr(k,45,"Amina",tab);
 k=add_borr(k,741,"ROSE",tab);
 k=add_borr(k,125,"Jennie",tab);
 k=add_borr(k,412,"HIBA",tab);
  return k;
-}
+}*/
 
 void display_borrower(list k)
 {
     borrower* current = k.head_b;
      if (current == NULL) {
-    printf("THE BOOK LIST IS EMPTY");
+    printf("THE BORROWER LIST IS EMPTY");
    return;
   }
   else
     {
     printf("<== Borrower List ==>\n\n");
-    printf("%-10s %-40s\n", "Book id", "Book Name");
+    printf("%-10s %-40s\n", "Borrower id", "Borrower Name");
 
         while (current != NULL) {
         printf("%-10d  %-40s \n", current->id, current->name);
@@ -672,11 +779,74 @@ printf("Press ENTER to comeback to the menu.");
 getch();
 return k;
 }
+void Textecolor(int ForgC){
+    WORD wColor;
+    HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    // We use csbi for the wAttributes word.
+    if (GetConsoleScreenBufferInfo(hStdOut, &csbi))
+    {
+        // Mask out all but the background attribute,
+        //and add in the forgournd color
+        wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
+        SetConsoleTextAttribute(hStdOut, wColor);
+    }
+    return;
+}
+
+
+void gotoxy(int x, int y)
+{
+    COORD c;
+    c.X = x;
+    c.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+void welcome()
+{
+    int k;
+    system("cls");
+    Textecolor(5);
+    printf("\t\t\t\t          R%cpublique Alg%crienne D%cmocratique et Populaire           \n", 130, 130, 130);
+    printf("\t\t\t\tMinist%cre de l'Enseignement Sup%crieur et de la Recherche Scientifique\n\n\n", 130, 130);
+    printf("\t\t\t\t     _______________________________________________________\n");
+    printf("\t\t\t\t    |        _______     _______     _                      |\n");
+    printf("\t\t\t\t    |       |  _____|   |  _____|   | |  %ccole nationale    |\n", 130);
+    printf("\t\t\t\t    |       | |_____    | |_____    | |                     |\n");
+    printf("\t\t\t\t    |       |  _____|   |_____  |   | |  sup%crieure         |\n", 130);
+    printf("\t\t\t\t    |       | |_____     _____| |   | |                     |\n");
+    printf("\t\t\t\t    |       |_______|   |_______|   |_|  d'informatique     |\n");
+    printf("\t\t\t\t    |_______________________________________________________|\n\n\n");
+    Textecolor(3);
+    printf("\t\t\t\t\tCPI - 1%cre Ann%ce - Ann%ce Universitaire 2024/2025 \n\n\n", 138, 130, 130);
+    printf("\t\t\t\t ___________________________________________________________________\n");
+    printf("\t\t\t\t|                                                                   |\n");
+    printf("\t\t\t\t| REALISE PAR : Boucenna Leila   &       Bouarab Hiba               |\n");
+    printf("\t\t\t\t|                                                                   |\n");
+    printf("\t\t\t\t|                                                                   |\n");
+    printf("\t\t\t\t|                                                                   |\n");
+    printf("\t\t\t\t|           SECTION : D          GROUPE: 14                         |\n");
+    printf("\t\t\t\t|                                                                   |\n");
+    printf("\t\t\t\t|           TP: Library Management                                  |\n");
+    printf("\t\t\t\t|                                                                   |\n");
+    printf("\t\t\t\t|___________________________________________________________________|\n\n\n");
+    Sleep(200);
+    Sleep(200);
+    Textecolor(5);
+    printf("\n");
+    printf("\t\t\t\t                             PLease                                         \n");
+    printf("\t\t\t\t                    Press any key to continue..                             ");
+    getch();
+
+    }
 
 
 
 
 int main() {
+  welcome();
 arr stat={0,0,0,0}; //init the values
 queue *loans=createQueue();
 list lst ={NULL,NULL};
@@ -692,7 +862,7 @@ lst=auto_add_borr(lst,stat);
     printf("2-Add book \n"); /// add and return are not the same,in return i need to askfor the student id and maybe other stuff
     printf("3-Remove a book or Take a book.\n"); /// but in add i need nothing
     printf("4-Display borrower list.\n");
-    printf("5-Add a new member to the library .\n");  /// search book dont forget it
+    printf("5-Add a new borrower .\n");  /// search book dont forget it
     printf("6-Delete a member.\n");
     printf("7-Issue a book'\n");
     printf("8-Return a book.\n");
@@ -722,7 +892,7 @@ lst=auto_add_borr(lst,stat);
            }
    case 5:
            {
-            lst=manually_add_member(lst,stat);
+            add_borr(lst,stat);
             break;
 
           }
